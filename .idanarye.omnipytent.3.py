@@ -10,7 +10,8 @@ def compile(ctx):
 
 @task
 def run(ctx):
-    cargo['aoc'] & TERMINAL_PANEL.size(15)
+    # cargo['aoc'] & TERMINAL_PANEL.size(15)
+    cargo['run'] & BANG
 
 
 @task
