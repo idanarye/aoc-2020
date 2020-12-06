@@ -37,8 +37,8 @@ def download_missing_input(ctx):
         cargo['aoc', 'input', '-d', day] & SH
 
 
-@task(alias=':0')
-def add_day(ctx, day_nr=99):
+@task
+def add_day(ctx, day_nr):
     import copier
     copier.copy(
         '.copier/day-template',
@@ -58,7 +58,7 @@ def add_day(ctx, day_nr=99):
         else:
             assert False, 'found no end?'
 
-        yield f'pub mod day{day_nr}'
+        yield f'pub mod day{day_nr};'
         yield line
 
         yield from it
