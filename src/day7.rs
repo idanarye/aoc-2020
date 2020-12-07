@@ -1,5 +1,3 @@
-use aoc_runner_derive::*;
-
 use std::collections::{HashMap, HashSet, VecDeque};
 
 use regex::Regex;
@@ -10,8 +8,7 @@ pub struct RowData {
     inner: HashMap<String, usize>,
 }
 
-#[aoc_generator(day7)]
-pub fn input_generator(input: &str) -> Vec<RowData> {
+pub fn generator(input: &str) -> Vec<RowData> {
     let outer_pattern = Regex::new(r"^(.*) bags? contain (.*)$").unwrap();
     let inner_pattern = Regex::new(r"(\d+) (.+?) bags?[,.]").unwrap();
     input.lines().map(|line| {
@@ -57,8 +54,7 @@ impl<'a> Rules<'a> {
     }
 }
 
-#[aoc(day7, part1)]
-pub fn solve_part1(input: &[RowData]) -> usize {
+pub fn part_1(input: &[RowData]) -> usize {
     let rules = Rules::new(input);
     let reversed = rules.reversed();
 
@@ -82,7 +78,6 @@ pub fn solve_part1(input: &[RowData]) -> usize {
     contains_target_recursively.len() - 1
 }
 
-#[aoc(day7, part2)]
-pub fn solve_part2(input: &[RowData]) -> usize {
+pub fn part_2(input: &[RowData]) -> usize {
     Rules::new(input).count_inside_including("shiny gold") - 1
 }

@@ -1,5 +1,3 @@
-use aoc_runner_derive::*;
-
 #[derive(Debug)]
 pub struct RowData {
     range: std::ops::RangeInclusive<usize>,
@@ -7,8 +5,7 @@ pub struct RowData {
     password: String,
 }
 
-#[aoc_generator(day2)]
-pub fn input_generator(input: &str) -> Vec<RowData> {
+pub fn generator(input: &str) -> Vec<RowData> {
     let pattern = regex::Regex::new(r"^(\d+)-(\d+) (.): (.*)$").unwrap();
 
     input.lines().map(|line| {
@@ -21,16 +18,14 @@ pub fn input_generator(input: &str) -> Vec<RowData> {
     }).collect()
 }
 
-#[aoc(day2, part1)]
-pub fn solve_part1(input: &[RowData]) -> usize {
+pub fn part_1(input: &[RowData]) -> usize {
     input.iter().filter(|entry| {
         let num_occurences = entry.password.chars().filter(|&c| c == entry.character).count();
         entry.range.contains(&num_occurences)
     }).count()
 }
 
-#[aoc(day2, part2)]
-pub fn solve_part2(input: &[RowData]) -> usize {
+pub fn part_2(input: &[RowData]) -> usize {
     input.iter().filter(|entry| {
         let first_place_ok = entry.password.chars().skip(*entry.range.start() - 1).next() == Some(entry.character);
         let second_place_ok = entry.password.chars().skip(*entry.range.end() - 1).next() == Some(entry.character);

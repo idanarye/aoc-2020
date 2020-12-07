@@ -1,13 +1,10 @@
-use aoc_runner_derive::*;
-
 use std::collections::HashMap;
 
 use regex::Regex;
 
 type RowData = HashMap<String, String>;
 
-#[aoc_generator(day4)]
-pub fn input_generator(input: &str) -> Vec<RowData> {
+pub fn generator(input: &str) -> Vec<RowData> {
     let pattern = Regex::new(r"(\w+):(\S+)").unwrap();
 
     let mut result = Vec::new();
@@ -36,8 +33,7 @@ pub fn input_generator(input: &str) -> Vec<RowData> {
     }
 }
 
-#[aoc(day4, part1)]
-pub fn solve_part1(input: &[RowData]) -> usize {
+pub fn part_1(input: &[RowData]) -> usize {
     let mandatory_fields  = [
         "byr",
         "iyr",
@@ -58,8 +54,7 @@ pub fn solve_part1(input: &[RowData]) -> usize {
     }).count()
 }
 
-#[aoc(day4, part2)]
-pub fn solve_part2(input: &[RowData]) -> usize {
+pub fn part_2(input: &[RowData]) -> usize {
     let year_pattern = Regex::new(r"^\d{4}$").unwrap();
     let verify_year = |value, range: std::ops::RangeInclusive<usize>| {
         if !year_pattern.is_match(value) {

@@ -1,19 +1,19 @@
-use aoc_runner_derive::*;
-
 #[derive(Debug)]
 pub struct RowData {
 }
 
-#[aoc_generator(day[[ day ]])]
-pub fn input_generator(input: &str) -> Vec<RowData> {
+pub fn generator(input: &str) -> Vec<RowData> {
     input.lines().map(|line| {
+        RowData {
+        }
     }).collect()
 }
 
-#[aoc(day[[ day ]], part1)]
-pub fn solve_part1(input: &[RowData]) -> usize {
+pub fn part_1(input: &[RowData]) -> usize {
+    0
 }
 
-// #[aoc(day[[ day ]], part2)]
-// pub fn solve_part2(input: &[RowData]) -> usize {
-// }
+pub fn part_2(input: &[RowData]) -> usize {
+    let _ = input;
+    0
+}

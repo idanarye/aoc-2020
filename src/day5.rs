@@ -1,5 +1,3 @@
-use aoc_runner_derive::*;
-
 #[derive(Debug)]
 pub struct RowData {
     row: u8,
@@ -40,8 +38,7 @@ impl RowData {
     }
 }
 
-#[aoc_generator(day5)]
-pub fn input_generator(input: &str) -> Vec<RowData> {
+pub fn generator(input: &str) -> Vec<RowData> {
     input.lines().map(RowData::new).collect()
 }
 
@@ -51,13 +48,11 @@ impl RowData {
     }
 }
 
-#[aoc(day5, part1)]
-pub fn solve_part1(input: &[RowData]) -> u16 {
+pub fn part_1(input: &[RowData]) -> u16 {
     input.iter().map(|s| s.seat_id()).max().unwrap()
 }
 
-#[aoc(day5, part2)]
-pub fn solve_part2(input: &[RowData]) -> u16 {
+pub fn part_2(input: &[RowData]) -> u16 {
     let mut sorted = input.iter().collect::<Vec<_>>();
     sorted.sort_by_key(|s| s.seat_id());
     for (seat, should_be) in sorted.iter().zip(sorted[0].seat_id()..) {

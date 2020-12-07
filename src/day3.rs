@@ -1,9 +1,6 @@
-use aoc_runner_derive::*;
-
 type RowData = Vec<bool>;
 
-#[aoc_generator(day3)]
-pub fn input_generator(input: &str) -> Vec<RowData> {
+pub fn generator(input: &str) -> Vec<RowData> {
     input.lines().map(|l| {
         l.chars().map(|c| match c {
             '.' => false,
@@ -23,13 +20,11 @@ fn calc_slope_trees(map: &[RowData], right: usize, down: usize) -> usize {
     }).count()
 }
 
-#[aoc(day3, part1)]
-pub fn solve_part1(input: &[RowData]) -> usize {
+pub fn part_1(input: &[RowData]) -> usize {
     calc_slope_trees(input, 3, 1)
 }
 
-#[aoc(day3, part2)]
-pub fn solve_part2(input: &[RowData]) -> usize {
+pub fn part_2(input: &[RowData]) -> usize {
     [
         (1, 1),
         (3, 1),
