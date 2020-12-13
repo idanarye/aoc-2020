@@ -3,6 +3,7 @@ from omnipytent import *
 from omnipytent.ext.idan import *
 
 import re
+from tempfile import NamedTemporaryFile
 
 
 def gen_all_implemented_days():
@@ -90,3 +91,20 @@ def add_day(ctx, day_nr):
     lib_main_file.write('\n'.join(gen_lib_lines()))
 
     CMD.checktime()
+
+
+@task.data_cell
+def demonstration_input(ctx):
+    CMD.new()
+
+
+@task
+def go(ctx, inp=demonstration_input):
+    f = NamedTemporaryFile()
+    f.write(inp.encode())
+    f.flush()
+    cargo[
+        'run', '--',
+        '--day', str(max(gen_all_implemented_days())),
+        '--file', f.name,
+    ] & BANG
