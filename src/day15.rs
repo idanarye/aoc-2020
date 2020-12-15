@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::num::NonZeroUsize;
 
 pub fn generator(input: &str) -> Vec<usize> {
     input.split(',').map(|line| line.parse().unwrap()).collect()
@@ -6,33 +6,31 @@ pub fn generator(input: &str) -> Vec<usize> {
 
 #[derive(Debug)]
 struct Game {
+    last_round: usize,
     next_number: usize,
-    ages: HashMap<usize, usize>,
+    last_seen_times: Vec<Option<NonZeroUsize>>
 }
 
 impl Game {
     fn new() -> Self {
         Self {
+            last_round: 0,
             next_number: 0,
-            ages: HashMap::default(),
+            last_seen_times: Vec::new(),
         }
     }
 
     fn feed_number(&mut self, number: usize) {
-        for age in self.ages.values_mut() {
-            *age += 1;
+        self.last_round += 1;
+        if self.last_seen_times.len() <= number {
+            self.last_seen_times.resize(number + 1, None);
         }
-        self.next_number = match self.ages.entry(number) {
-            std::collections::hash_map::Entry::Vacant(entry) => {
-                entry.insert(0);
-                0
-            },
-            std::collections::hash_map::Entry::Occupied(mut entry) => {
-                let result = *entry.get();
-                *(entry.get_mut()) = 0;
-                result
-            },
+        self.next_number = if let Some(last_seen_time) = self.last_seen_times[number] {
+            self.last_round - last_seen_time.get()
+        } else {
+            0
         };
+        self.last_seen_times[number] = NonZeroUsize::new(self.last_round);
     }
 }
 
@@ -59,6 +57,5 @@ pub fn part_2(input: &[usize]) -> usize {
     for number in input.iter() {
         game.feed_number(*number);
     }
-    // game.nth(30000000 - input.len() - 1).unwrap()
-    0
+    game.nth(30000000 - input.len() - 1).unwrap()
 }
