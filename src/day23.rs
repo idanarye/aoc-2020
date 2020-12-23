@@ -1,56 +1,67 @@
-use std::collections::LinkedList;
-
 #[derive(Debug, Clone)]
 pub struct GameState {
-    cups: LinkedList<usize>,
+    nexts: Vec<usize>,
 }
 
 pub fn generator(input: &str) -> GameState {
-    GameState {
-        cups: input.chars().map(|c| c as usize - '0' as usize).collect(),
+    let mut nexts = vec![0; 10];
+    let mut current = 0;
+    for c in input.chars() {
+        let label = c as usize - '0' as usize;
+        nexts[current] = label;
+        current = label;
+    }
+    nexts[current] = nexts[0];
+    GameState { nexts }
+}
+
+impl GameState {
+    fn iter_from(&self, start_from: usize) -> impl Iterator<Item = usize> + '_ {
+        let first = self.nexts[start_from];
+        std::iter::successors(Some(first), move |&cup| {
+            let next = self.nexts[cup];
+            if next == first {
+                None
+            } else {
+                Some(next)
+            }
+        })
     }
 }
 
-/*
 impl std::fmt::Display for GameState {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        for (i, cup) in self.cups.iter().enumerate() {
-            if 0 < i {
-                use std::fmt::Write;
-                f.write_char(' ')?;
-            }
-            if i == self.current_index {
-                write!(f, "({})", cup)?;
-            } else {
-                write!(f, "{}", cup)?;
-            }
+        let mut it = self.iter_from(0);
+        write!(f, "({})", it.next().unwrap())?;
+        for cup in it {
+            write!(f, " {}", cup)?;
         }
         Ok(())
     }
 }
-*/
 
 impl GameState {
     fn run_move(&mut self) {
-        let current_value = self.cups.pop_front().unwrap();
-        let pick_up: Vec<usize> = (0..3).map(|_| self.cups.pop_front().unwrap()).collect();
-        self.cups.push_back(current_value);
-        let insert_at_index = self.cups.iter()
-            .map(|&cup| {
-                (cup as isize - current_value as isize).rem_euclid(10) as usize
-            })
-            .enumerate()
-            .max_by_key(|&(_, key)| key)
-            .unwrap().0 + 1;
-        let mut cups_after = self.cups.split_off(insert_at_index);
-        self.cups.extend(pick_up.into_iter());
-        self.cups.append(&mut cups_after);
-    }
-
-    fn numbers_after<'a>(&'a self, target: usize) -> impl Iterator<Item = usize> + 'a {
-        let one_position = self.cups.iter().position(|&cup| cup == target).unwrap();
-        self.cups.iter().skip(one_position + 1).copied()
-            .chain(self.cups.iter().take(one_position).copied())
+        let mut pick_up: [usize; 3] = [0, 0, 0];
+        for (c, p) in self.iter_from(0).skip(1).zip(pick_up.iter_mut()) {
+            *p = c;
+        }
+        let mut put_after = self.nexts[0] - 1;
+        loop {
+            if put_after < 1 {
+                put_after = self.nexts.len() - 1;
+            }
+            if pick_up.iter().any(|&c| c == put_after) {
+                put_after -= 1;
+            } else {
+                break;
+            }
+        }
+        let first_number = self.nexts[0];
+        self.nexts[first_number] = self.nexts[pick_up[2]];
+        self.nexts[pick_up[2]] = self.nexts[put_after];
+        self.nexts[put_after] = pick_up[0];
+        self.nexts[0] = self.nexts[self.nexts[0]];
     }
 }
 
@@ -59,17 +70,24 @@ pub fn part_1(game: &GameState) -> String {
     for _ in 0..100 {
         game.run_move();
     }
-    game.numbers_after(1).map(|cup| format!("{}", cup)).collect::<Vec<_>>().join("")
+    game.iter_from(1).take_while(|&cup| cup != 1).map(|cup| format!("{}", cup)).collect::<Vec<_>>().join("")
 }
 
 pub fn part_2(game: &GameState) -> usize {
     let mut game = game.clone();
+    let last_cup = game.iter_from(0).last().unwrap();
+    game.nexts[last_cup] = game.nexts.len();
+    let goal = 1_000_000;
+    game.nexts.extend((game.nexts.len() + 1)..=goal);
+    game.nexts.push(game.nexts[0]);
 
-    let max_cup = *game.cups.iter().max().unwrap();
-    game.cups.extend(max_cup + 1..=1_000_000);
-    for _ in 0..1 {
+    for _ in 0..10_000_000 {
         game.run_move();
     }
 
-    0
+    if let [a, b] = game.iter_from(1).take(2).collect::<Vec<_>>().as_slice() {
+        a * b
+    } else {
+        panic!("Expected to take 2");
+    }
 }
