@@ -107,4 +107,4 @@ def go(ctx, inp=demonstration_input):
         'run', '--',
         '--day', str(max(gen_all_implemented_days())),
         '--file', f.name,
-    ] & BANG
+    ].with_env(RUST_BACKTRACE='1') & BANG
